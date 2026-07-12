@@ -1,0 +1,184 @@
+{
+  "source": "usace",
+  "updatedAt": "2026-07-12T22:07:55.938Z",
+  "reportDate": "31JAN2024",
+  "reportGeneratedAt": "31JAN2024 1130 (LOCAL TZ)",
+  "blocks": [
+    {
+      "start": "12:00 AM",
+      "end": "4:00 AM",
+      "generators": 0,
+      "label": "Low & Slow"
+    },
+    {
+      "start": "4:00 AM",
+      "end": "5:00 AM",
+      "generators": 1,
+      "label": "Optimal Cruise"
+    },
+    {
+      "start": "5:00 AM",
+      "end": "11:00 AM",
+      "generators": 2,
+      "label": "Swift Current"
+    },
+    {
+      "start": "11:00 AM",
+      "end": "12:00 PM",
+      "generators": 1,
+      "label": "Optimal Cruise"
+    },
+    {
+      "start": "12:00 PM",
+      "end": "4:00 PM",
+      "generators": 0,
+      "label": "Low & Slow"
+    },
+    {
+      "start": "4:00 PM",
+      "end": "5:00 PM",
+      "generators": 1,
+      "label": "Optimal Cruise"
+    },
+    {
+      "start": "5:00 PM",
+      "end": "9:00 PM",
+      "generators": 2,
+      "label": "Swift Current"
+    },
+    {
+      "start": "9:00 PM",
+      "end": "10:00 PM",
+      "generators": 1,
+      "label": "Optimal Cruise"
+    },
+    {
+      "start": "10:00 PM",
+      "end": "12:00 AM",
+      "generators": 0,
+      "label": "Low & Slow"
+    }
+  ],
+  "hourly": [
+    {
+      "hour": 1,
+      "rawValue": 0,
+      "generators": 0
+    },
+    {
+      "hour": 2,
+      "rawValue": 0,
+      "generators": 0
+    },
+    {
+      "hour": 3,
+      "rawValue": 0,
+      "generators": 0
+    },
+    {
+      "hour": 4,
+      "rawValue": 0,
+      "generators": 0
+    },
+    {
+      "hour": 5,
+      "rawValue": 45,
+      "generators": 1
+    },
+    {
+      "hour": 6,
+      "rawValue": 90,
+      "generators": 2
+    },
+    {
+      "hour": 7,
+      "rawValue": 135,
+      "generators": 2
+    },
+    {
+      "hour": 8,
+      "rawValue": 135,
+      "generators": 2
+    },
+    {
+      "hour": 9,
+      "rawValue": 135,
+      "generators": 2
+    },
+    {
+      "hour": 10,
+      "rawValue": 90,
+      "generators": 2
+    },
+    {
+      "hour": 11,
+      "rawValue": 90,
+      "generators": 2
+    },
+    {
+      "hour": 12,
+      "rawValue": 45,
+      "generators": 1
+    },
+    {
+      "hour": 13,
+      "rawValue": 0,
+      "generators": 0
+    },
+    {
+      "hour": 14,
+      "rawValue": 0,
+      "generators": 0
+    },
+    {
+      "hour": 15,
+      "rawValue": 0,
+      "generators": 0
+    },
+    {
+      "hour": 16,
+      "rawValue": 0,
+      "generators": 0
+    },
+    {
+      "hour": 17,
+      "rawValue": 45,
+      "generators": 1
+    },
+    {
+      "hour": 18,
+      "rawValue": 90,
+      "generators": 2
+    },
+    {
+      "hour": 19,
+      "rawValue": 90,
+      "generators": 2
+    },
+    {
+      "hour": 20,
+      "rawValue": 90,
+      "generators": 2
+    },
+    {
+      "hour": 21,
+      "rawValue": 90,
+      "generators": 2
+    },
+    {
+      "hour": 22,
+      "rawValue": 45,
+      "generators": 1
+    },
+    {
+      "hour": 23,
+      "rawValue": 0,
+      "generators": 0
+    },
+    {
+      "hour": 24,
+      "rawValue": 0,
+      "generators": 0
+    }
+  ]
+}
