@@ -7,6 +7,9 @@ const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
 const OUTPUT_PATH = path.join(REPO_ROOT, 'public', 'data', 'schedule.json');
 const SOURCE_URL = 'https://www.lrn-wc.usace.army.mil/tva_schedule.shtml';
+const FETCH_TIMEOUT_MS = Number.parseInt(process.env.SCRAPE_SCHEDULE_TIMEOUT_MS ?? '20000', 10);
+const FETCH_RETRIES = Number.parseInt(process.env.SCRAPE_SCHEDULE_RETRIES ?? '3', 10);
+const RETRY_BASE_DELAY_MS = Number.parseInt(process.env.SCRAPE_SCHEDULE_RETRY_DELAY_MS ?? '1200', 10);
 
 export function generatorsToLabel(generators) {
   if (generators === 2) {
@@ -134,19 +137,72 @@ export function parsePrescheduleHtml(html) {
   };
 }
 
-export async function scrapeSchedule() {
-  const response = await fetch(SOURCE_URL, {
-    headers: {
-      'User-Agent': 'Caney-Flow-Tracker/1.0 (+https://github.com/upshawam/Caney-Flow-Tracker)',
-    },
-  });
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
-  if (!response.ok) {
-    throw new Error(`Schedule fetch failed with status ${response.status}`);
+function isRetryableNetworkError(error) {
+  const code = error?.cause?.code;
+  return code === 'UND_ERR_CONNECT_TIMEOUT'
+    || code === 'UND_ERR_HEADERS_TIMEOUT'
+    || code === 'UND_ERR_SOCKET'
+    || code === 'ETIMEDOUT'
+    || code === 'ECONNRESET'
+    || code === 'EAI_AGAIN';
+}
+
+function buildAttemptErrorMessage(attempt, attempts, error) {
+  const code = error?.cause?.code;
+  const parts = [`Schedule fetch attempt ${attempt}/${attempts} failed`];
+
+  if (code) {
+    parts.push(`(${code})`);
   }
 
-  const html = await response.text();
-  return parsePrescheduleHtml(html);
+  if (error?.message) {
+    parts.push(`- ${error.message}`);
+  }
+
+  return parts.join(' ');
+}
+
+export async function scrapeSchedule() {
+  const attempts = Number.isFinite(FETCH_RETRIES) && FETCH_RETRIES > 0 ? FETCH_RETRIES : 1;
+  const timeoutMs = Number.isFinite(FETCH_TIMEOUT_MS) && FETCH_TIMEOUT_MS > 0 ? FETCH_TIMEOUT_MS : 20000;
+  const retryBaseDelayMs = Number.isFinite(RETRY_BASE_DELAY_MS) && RETRY_BASE_DELAY_MS > 0 ? RETRY_BASE_DELAY_MS : 1200;
+  let lastError;
+
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      const response = await fetch(SOURCE_URL, {
+        headers: {
+          'User-Agent': 'Caney-Flow-Tracker/1.0 (+https://github.com/upshawam/Caney-Flow-Tracker)',
+        },
+        signal: AbortSignal.timeout(timeoutMs),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Schedule fetch failed with status ${response.status}`);
+      }
+
+      const html = await response.text();
+      return parsePrescheduleHtml(html);
+    } catch (error) {
+      lastError = error;
+
+      if (attempt >= attempts || !isRetryableNetworkError(error)) {
+        break;
+      }
+
+      const delayMs = retryBaseDelayMs * attempt;
+      console.warn(buildAttemptErrorMessage(attempt, attempts, error));
+      await sleep(delayMs);
+    }
+  }
+
+  const retrySummary = `Failed to fetch schedule after ${attempts} attempt${attempts === 1 ? '' : 's'}`;
+  const detail = lastError?.cause?.code ?? lastError?.message ?? 'unknown network error';
+  throw new Error(`${retrySummary}: ${detail}`, { cause: lastError });
 }
 
 async function main() {
