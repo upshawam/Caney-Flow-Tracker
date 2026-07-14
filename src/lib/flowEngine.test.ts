@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { mockSchedule } from '../data/mockSchedule';
 import { riverPoints } from '../data/riverPoints';
-import { buildPointForecast, formatMinuteLabel, parseTimeLabel } from './flowEngine';
+import { buildPointForecast, buildRiverForecast, formatMinuteLabel, parseTimeLabel } from './flowEngine';
 
 describe('flowEngine', () => {
   it('parses 12-hour clock labels correctly', () => {
@@ -39,5 +39,20 @@ describe('flowEngine', () => {
 
     expect(overlappingInterval?.generators).toBe(2);
     expect(formatMinuteLabel(overlappingInterval!.startMinute)).toBe('9:36 PM');
+  });
+
+  it('keeps downstream hourly chart slots aligned to propagated release timing', () => {
+    const referenceMinute = parseTimeLabel('10:00 PM');
+    const forecast = buildRiverForecast(riverPoints, mockSchedule, referenceMinute, 12);
+    const southCarthage = forecast.pointForecasts.find((pointForecast) => pointForecast.point.name === 'South Carthage Ag Center');
+
+    if (!southCarthage) {
+      throw new Error('South Carthage Ag Center not found');
+    }
+
+    expect(southCarthage.hourlySlots[0]?.label).toBe('10:00 PM');
+    expect(southCarthage.hourlySlots[0]?.generators).toBe(2);
+    expect(southCarthage.hourlySlots[1]?.label).toBe('11:00 PM');
+    expect(southCarthage.hourlySlots[1]?.generators).toBe(0);
   });
 });

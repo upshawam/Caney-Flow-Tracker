@@ -18,6 +18,18 @@ function offsetLabel(offsetHours: number): string {
   return `${sign}${offsetHours}h`;
 }
 
+function getScheduleFreshnessLabel(dataset: ScheduleDataset): string | null {
+  if (dataset.reportGeneratedAt) {
+    return `USACE report: ${dataset.reportGeneratedAt}`;
+  }
+
+  if (dataset.updatedAt) {
+    return `Updated: ${dataset.updatedAt}`;
+  }
+
+  return null;
+}
+
 function App() {
   const [scheduleData, setScheduleData] = useState<{
     status: 'loading' | 'success' | 'error';
@@ -32,7 +44,7 @@ function App() {
 
     async function loadScheduleData() {
       try {
-        const response = await fetch('/Caney-Flow-Tracker/data/schedule.json', { cache: 'no-store' });
+        const response = await fetch(`${import.meta.env.BASE_URL}data/schedule.json`, { cache: 'no-store' });
         if (!response.ok) throw new Error(`${response.status}`);
         const dataset = (await response.json()) as ScheduleDataset;
         if (isActive) setScheduleData({ status: 'success', dataset });
@@ -66,6 +78,7 @@ function App() {
     : scheduleData.status === 'loading'
       ? 'Loading…'
       : 'Mock fallback';
+  const scheduleFreshnessLabel = getScheduleFreshnessLabel(scheduleData.dataset);
 
   return (
     <main className="app-shell">
@@ -123,6 +136,8 @@ function App() {
 
       <div className="viewing-label">
         <span>Viewing: <strong>{viewingLabel}</strong></span>
+        <span className="viewing-label__meta">Forecast reflects propagated dam release travel time at each point</span>
+        {scheduleFreshnessLabel && <span className="viewing-label__meta">{scheduleFreshnessLabel}</span>}
         {offsetHours !== 0 && (
           <button type="button" className="viewing-label__reset" onClick={() => setOffsetHours(0)}>
             Back to now

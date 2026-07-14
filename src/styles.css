@@ -144,6 +144,7 @@ p {
 .viewing-label {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.75rem;
   font-size: 0.9rem;
   color: var(--muted);
@@ -152,6 +153,10 @@ p {
 
 .viewing-label strong {
   color: var(--text);
+}
+
+.viewing-label__meta {
+  font-size: 0.82rem;
 }
 
 .viewing-label__reset {
@@ -169,6 +174,12 @@ p {
 
 .viewing-label__reset:hover {
   background: rgba(56, 189, 248, 0.2);
+}
+
+@media (max-width: 720px) {
+  .viewing-label__reset {
+    margin-left: 0;
+  }
 }
 
 /* ── timeline grid ────────────────────────────────────────── */
